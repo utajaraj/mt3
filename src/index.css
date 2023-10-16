@@ -1,0 +1,8 @@
+:root {
+  --accent-color:#43ED3f;
+  --due-within-a-day-color:#FFD6D6
+}
+
+a {
+  text-decoration: none;
+}

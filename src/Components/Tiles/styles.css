@@ -1,0 +1,64 @@
+.App {
+    font-family: sans-serif;
+    text-align: center;
+}
+
+
+.tile {
+    background-color: #fff;
+    transition: all 300ms ease-in-out;
+    position: relative;
+    padding: 30px;
+    min-height: 150px;
+    width: calc(25% - 30px);
+    border: 1px solid black;
+}
+
+.tile::after {
+    content: "";
+    position: absolute;
+    width: 100px;
+    background-color: black;
+    height: 5px;
+    left: calc(50% - 50px);
+    top: calc(50% - 5px);
+    transform: rotate(45deg);
+    display: block;
+}
+
+.tile::before {
+    content: "";
+    position: absolute;
+    width: 100px;
+    background-color: black;
+    height: 5px;
+    right: calc(50% - 50px);
+    top: calc(50% - 5px);
+    transform: rotate(135deg);
+    display: block;
+}
+
+.tile :hover {
+    box-shadow: none;
+}
+
+.regular-tiles>*:hover {
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+}
+
+.regular-tiles {
+    display: flex;
+    width: 100%;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+.regular-tiles>* {
+    background-color: #fff;
+    transition: all 300ms ease-in-out;
+    position: relative;
+    padding: 30px;
+    min-height: 150px;
+    width: calc(25% - 30px);
+    border: 1px solid black;
+}
