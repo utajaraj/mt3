@@ -1,4 +1,4 @@
-import { Modal, notification } from "antd";
+import { Modal } from "antd";
 import { TaskType } from "../../types/TaskType";
 import "./styles.css";
 import AddTaskForm from "../Forms/Tasks/AddTaskForm";
@@ -35,22 +35,19 @@ export const Container: any = (props: TilePropsInterface) => {
     setCards(tasks)
   }, [tasks.length])
 
-  const updatedTask = async (task: any, order: number) => {
-    const newTask = { ...task }
-    newTask.order = order
+  const updatedTask = async (task: any, otherItemOrder: number, order: number) => {
     const DB = await TasksDB()
     const { UpdateTask } = DB
-    const updateOne = await UpdateTask(newTask)
-    if (updateOne.status) {
-      notification.success({ message: "Task order updated." })
-    } else {
-      notification.error({ message: "Could not update task order." })
-    }
-    loadTasks()
+    const newTask = { ...task }
+    const otherItem = tasks.filter(x => x.order === otherItemOrder)[0]
+    const newOtherItem = { ...otherItem }
+    newOtherItem.order = task.order
+    newTask.order = order
+    Promise.all([UpdateTask(newTask), UpdateTask(newOtherItem)])
   }
   const moveCard = useCallback((dragIndex: number, hoverIndex: number, task: any) => {
     const cards = (prevCards: any[]) => {
-      updatedTask(task, hoverIndex)
+      updatedTask(task, hoverIndex, dragIndex)
       return update(prevCards, {
         $splice: [
           [dragIndex, 1],
@@ -72,6 +69,7 @@ export const Container: any = (props: TilePropsInterface) => {
             id={`task_card_${task.task_id}`}
             task={task}
             moveCard={(d: number, h: number, task: any) => { moveCard(d, h, task) }}
+            loadTasks={loadTasks}
           />
         )
       })
@@ -92,7 +90,7 @@ export default function TasksTile(props: TilePropsInterface) {
 
   useEffect(() => {
     setData(tasks)
-  }, [props])
+  }, [props.tasks])
   return (
     <div className="my-tiles">
       <Modal title="Add new task" footer={false} open={addTaskModalVisible} closable={true} onCancel={closeModal}>

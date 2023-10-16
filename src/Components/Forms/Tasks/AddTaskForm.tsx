@@ -5,9 +5,9 @@ import { TasksDB } from "../../../lib/TasksDB"
 import { TaskType } from "../../../types/TaskType"
 
 const priorities = [
-    { label: "Armaggedon", options: [{ label: 0, value: 0 }] },
-    { label: "Yesterday", options: [{ label: 1, value: 1 }, { label: 2, value: 2 }] },
-    { label: "ASAP", options: [{ label: 3, value: 3 }, { label: 4, value: 4 }] },
+    { label: "Critical", options: [{ label: 0, value: 0 }] },
+    { label: "Very Important", options: [{ label: 1, value: 1 }, { label: 2, value: 2 }] },
+    { label: "Important", options: [{ label: 3, value: 3 }, { label: 4, value: 4 }] },
     { label: "Normal", options: [{ label: 5, value: 5 }, { label: 6, value: 6 }] },
     { label: "Less Important", options: [{ label: 7, value: 7 }, { label: 8, value: 8 }, { label: 9, value: 9 }] },
     { label: "Very Unimportant", options: [{ label: 10, value: 10 }] },
@@ -25,10 +25,10 @@ export default function AddTaskForm({ ...props }) {
             const writeTaskToDB = await AddTask(newTask)
             if (writeTaskToDB.status) {
                 const { loadTasks } = props
-                // notification["success"]({
-                //     message: "Task added",
-                //     placement: "top"
-                // })
+                notification["success"]({
+                    message: "Task added",
+                    placement: "top"
+                })
                 loadTasks()
                 return { status: true, message: "Task added" }
             } else {

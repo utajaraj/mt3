@@ -38,8 +38,10 @@
     display: block;
 }
 
-.tile :hover {
-    box-shadow: none;
+.tile:hover {
+    box-shadow: none!important;
+    cursor: pointer;
+    background-color: #ededed;
 }
 
 .regular-tiles>*:hover {

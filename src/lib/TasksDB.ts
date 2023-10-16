@@ -44,7 +44,7 @@ export const TasksDB = async () => {
         autoIncrement: true,
       });
       // Create an index on the 'date' property of the objects.
-      store.createIndex('due_date', 'due_date');
+      store.createIndex('status', 'status');
       store.createIndex('order', 'order');
     },
   });
@@ -85,7 +85,7 @@ export const TasksDB = async () => {
       const due_date = task.due_date && typeof task.due_date == 'object' ? task.due_date.toISOString() : typeof task.due_date == 'string' && task.due_date.length > 0 ? task.due_date : "";
       const order = task.order == undefined || task.order === null ? 0 : task.order
       const task_id = task.task_id
-      const newTask: TaskType = { priority, name, status, due_date, order,task_id }
+      const newTask: TaskType = { priority, name, status, due_date, order, task_id }
 
 
       const taskValidation: ValidationType = validateTask(newTask)
@@ -105,7 +105,20 @@ export const TasksDB = async () => {
     }
   }
 
-  
+  const DeleteAllCompleted = async () => {
+    const dones = await db.getAllFromIndex("tasks", "status", "Done")
+    for (let i = 0; i < dones.length; i++) {
+      const doneItem = dones[i]
+      const { priority, name, due_date, order, task_id } = doneItem
+      const newItem = {
+        priority, name, status: "Deleted", due_date, order, task_id
+      }
+      await db.put('tasks', newItem);
+    }
+    return { status: true, message: "Tasks have been updated." }
+  }
+
+
   const SortByDate = (order: 1 | -1, data: TaskType[]) => {
     const sortOrder: "Asc" | "Des" = order === 1 ? "Asc" : "Des"
     if (sortOrder === "Asc") {
@@ -114,7 +127,7 @@ export const TasksDB = async () => {
     return data.sort((a: TaskType, b: TaskType) => -a.due_date.localeCompare(b.due_date))
   }
 
-  
+
   const ReadAllTasks = async () => {
     const data = await db.getAll("tasks")
     return data
@@ -123,7 +136,7 @@ export const TasksDB = async () => {
     const data = await db.clear("tasks")
     return data
   }
-  
+
   const ReadAllByDueDateAsc = async () => {
     const data: TaskType[] = await ReadAllTasks()
     return SortByDate(1, data)
@@ -132,7 +145,7 @@ export const TasksDB = async () => {
     const data: TaskType[] = await ReadAllTasks()
     return SortByDate(1, data)
   }
-  
+
   const SortByOrder = (order: 1 | -1, data: TaskType[]) => {
     const sortOrder: "Asc" | "Des" = order === 1 ? "Asc" : "Des"
     if (sortOrder === "Asc") {
@@ -152,5 +165,5 @@ export const TasksDB = async () => {
   }
 
 
-  return { ReadAllByDueDateAsc, ReadAllByDueDateDes, ReadAllByDueOrderAsc, ReadAllByOrderDes, AddTask, ClearAll, UpdateTask }
+  return { ReadAllByDueDateAsc, DeleteAllCompleted, ReadAllByDueDateDes, ReadAllByDueOrderAsc, ReadAllByOrderDes, AddTask, ClearAll, UpdateTask }
 }

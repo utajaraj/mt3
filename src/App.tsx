@@ -6,7 +6,7 @@ import Loading from './Components/Loading';
 import { TasksDB } from './lib/TasksDB';
 import type { TaskType } from "./types/TaskType";
 import TasksTile from './Components/Tiles/TasksTile';
-import { Drawer, Modal, Popconfirm } from 'antd';
+import { Drawer, Modal, Popconfirm, notification } from 'antd';
 import AddTaskForm from './Components/Forms/Tasks/AddTaskForm';
 
 function App() {
@@ -19,6 +19,7 @@ function App() {
   const [actionsDrawerVisible, setActionsDrawerVisible] = useState<boolean>(false)
   const [addTaskModalVisible, setAddTaskModalVisible] = useState<boolean>(false)
   const loadTasks = async () => {
+    setLoadingTasks(true)
     const DB = await TasksDB()
     const { ReadAllByOrderDes } = DB
     const tasksFromDB = await ReadAllByOrderDes()
@@ -30,6 +31,15 @@ function App() {
     const { ClearAll } = DB
     await ClearAll()
     loadTasks()
+  }
+
+
+  const deleteCompletedItems = async () => {
+    const DB = await TasksDB()
+    const { DeleteAllCompleted } = DB
+    const result = await DeleteAllCompleted()
+    loadTasks()
+    notification.success({message: result.message})
   }
 
   useEffect(() => {
@@ -66,6 +76,16 @@ function App() {
               Delete all tasks
             </li>
           </Popconfirm>
+          <Popconfirm
+            title="Watch out!"
+            icon={<QuestionCircleOutlined style={{ color: "yellow" }} />}
+            description="Are you sure you want to change the status of all items to deleted?"
+            onConfirm={deleteCompletedItems}
+          >
+            <li>
+              Change all completed to deleted
+            </li>
+          </Popconfirm>
         </ul>
       </Drawer>
       {
@@ -73,10 +93,13 @@ function App() {
       }
       <div style={{ display: "flex", gap: "30px" }}>
         <h2>
-          Active: {tasks.map(task => task.status === "Active").length}
+          Active: {tasks.filter(task => task.status === "Active").length}
         </h2>
         <h2>
-          Done: {tasks.map(task => task.status === "Done").length}
+          Done: {tasks.filter(task => task.status === "Done").length}
+        </h2>
+        <h2>
+          Deleted: {tasks.filter(task => task.status === "Deleted").length}
         </h2>
       </div>
     </>

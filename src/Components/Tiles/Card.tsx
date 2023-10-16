@@ -3,7 +3,7 @@ import { TaskType } from "../../types/TaskType"
 import { Notify } from "../../lib/Notify"
 import type { Identifier, XYCoord } from 'dnd-core'
 import type { FC } from 'react'
-import { useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useDrag, useDrop } from 'react-dnd'
 import { Switch, notification } from 'antd'
 export const ItemTypes = {
@@ -21,7 +21,8 @@ export interface CardProps {
     id: any
     task: TaskType
     index: number
-    moveCard: (dragIndex: number, hoverIndex: number, task: TaskType) => void
+    moveCard: (dragIndex: number, hoverIndex: number, task: TaskType) => void,
+    loadTasks:any
 }
 
 interface DragItem {
@@ -30,8 +31,14 @@ interface DragItem {
     type: string
 }
 
-export const Card: FC<CardProps> = ({ id, task, index, moveCard }) => {
+export const Card: FC<CardProps> = ({ id, task, index, moveCard, loadTasks }) => {
     const ref = useRef<HTMLDivElement>(null)
+    const data = task
+    
+    const [taskData, setTaskData] = useState<any>(data)
+    useEffect(() => { 
+        setTaskData(data)
+    }, [data])
     const [{ handlerId }, drop] = useDrop<
         DragItem,
         void,
@@ -83,7 +90,7 @@ export const Card: FC<CardProps> = ({ id, task, index, moveCard }) => {
             }
 
             // Time to actually perform the action
-            moveCard(dragIndex, hoverIndex,task)
+            moveCard(dragIndex, hoverIndex, task)
 
             // Note: we're mutating the monitor item here!
             // Generally it's better to avoid mutations,
@@ -112,14 +119,9 @@ export const Card: FC<CardProps> = ({ id, task, index, moveCard }) => {
             const newStatus = value ? "Active" : "Done"
             const { UpdateTask } = DB
             taskInfo.status = newStatus
-            console.log(newStatus)
             const updatedTask: any = await UpdateTask({ ...taskInfo })
-            console.log(updatedTask)
             if (updatedTask.status) {
-                notification["error"]({
-                    message: `Task changed to ${newStatus}`,
-                    placement: "top"
-                })
+                loadTasks()
                 Notify("success", `Task changed to ${newStatus}`)
             } else {
                 notification["error"]({
@@ -145,7 +147,10 @@ export const Card: FC<CardProps> = ({ id, task, index, moveCard }) => {
             <p>
                 <b>Status:</b>
                 <br />
-                <Switch onClick={(value: any, e: any) => { updateTask(e, value, task) }} defaultChecked={task.status === "Active"} checkedChildren="Active" unCheckedChildren="Done" />
+                {
+                    taskData.status === "Deleted" ? <p>Deleted</p> :
+                        <Switch onClick={(value: any, e: any) => { updateTask(e, value, task) }} defaultChecked={task.status === "Active"} checkedChildren="Active" unCheckedChildren="Done" />
+                }
             </p>
         </div>
     )
