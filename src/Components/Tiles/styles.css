@@ -67,3 +67,14 @@
     cursor: move;
     border: 1px solid black;
 }
+
+@media only screen and (max-width:1224px){
+    .regular-tiles>* {
+        width: calc(50% - 30px);
+    }
+}
+@media only screen and (max-width:920px){
+    .regular-tiles>* {
+        width: 100%
+    }
+}
