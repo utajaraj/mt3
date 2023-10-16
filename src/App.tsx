@@ -11,9 +11,6 @@ import AddTaskForm from './Components/Forms/Tasks/AddTaskForm';
 
 function App() {
 
-
-
-
   const [tasks, setTasks] = useState<TaskType[] | []>([])
   const [loadingTasks, setLoadingTasks] = useState<boolean>(true)
   const [actionsDrawerVisible, setActionsDrawerVisible] = useState<boolean>(false)
