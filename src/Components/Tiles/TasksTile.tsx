@@ -1,15 +1,22 @@
-import { Modal } from "antd";
+import { Modal, notification } from "antd";
 import { TaskType } from "../../types/TaskType";
 import "./styles.css";
 import AddTaskForm from "../Forms/Tasks/AddTaskForm";
 import { useState, useCallback, useEffect } from "react";
+import isToday from 'dayjs/plugin/isToday'
+import isTomorrow from 'dayjs/plugin/isTomorrow'
+import dayjs from "dayjs";
+dayjs.extend(isTomorrow)
+dayjs.extend(isToday)
+
 
 import { TasksDB } from "../../lib/TasksDB"
 
 interface TilePropsInterface {
   tasks: TaskType[] | []
   loadTasks: any,
-  setAddTaskModalVisible?: any
+  setAddTaskModalVisible?: any,
+  filter: boolean
 }
 
 import update from 'immutability-helper'
@@ -27,13 +34,19 @@ export interface ContainerState {
   cards: Item[]
 }
 
+const wait = async () => {
+  setTimeout(() => {
+    return true
+  }, 2000)
+}
 export const Container: any = (props: TilePropsInterface) => {
   const tasks: TaskType[] = props.tasks
+  const filter: boolean = props.filter
   const loadTasks: any = props.loadTasks
   const [cards, setCards] = useState(tasks)
   useEffect(() => {
     setCards(tasks)
-  }, [tasks.length])
+  }, [filter, tasks])
 
   const updatedTask = async (task: any, otherItemOrder: number, order: number) => {
     const DB = await TasksDB()
@@ -43,7 +56,13 @@ export const Container: any = (props: TilePropsInterface) => {
     const newOtherItem = { ...otherItem }
     newOtherItem.order = task.order
     newTask.order = order
-    Promise.all([UpdateTask(newTask), UpdateTask(newOtherItem)])
+    const one = await UpdateTask(newOtherItem)
+    await wait()
+    console.log("here")
+    const two = await UpdateTask(newTask)
+    if (one.status && two.status) {
+      notification.success({ message: "Order updated" })
+    }
   }
   const moveCard = useCallback((dragIndex: number, hoverIndex: number, task: any) => {
     const cards = (prevCards: any[]) => {
@@ -81,7 +100,7 @@ export const Container: any = (props: TilePropsInterface) => {
 
 
 export default function TasksTile(props: TilePropsInterface) {
-  const { tasks, loadTasks } = props
+  const { tasks, loadTasks, filter } = props
   const [data, setData] = useState(tasks)
   const [addTaskModalVisible, setAddTaskModalVisible] = useState<boolean>(false)
   const closeModal = () => {
@@ -94,7 +113,7 @@ export default function TasksTile(props: TilePropsInterface) {
   return (
     <div className="my-tiles">
       <Modal title="Add new task" footer={false} open={addTaskModalVisible} closable={true} onCancel={closeModal}>
-        <AddTaskForm loadTasks={loadTasks} />
+        <AddTaskForm loadTasks={loadTasks} tasks={tasks} />
       </Modal>
       <div className="regular-tiles">
         <div
@@ -102,7 +121,7 @@ export default function TasksTile(props: TilePropsInterface) {
           onClick={() => { setAddTaskModalVisible(true) }}
         >
         </div>
-        <Container tasks={data} loadTasks={loadTasks} />
+        <Container filter={filter} tasks={data} loadTasks={loadTasks} />
       </div>
 
 

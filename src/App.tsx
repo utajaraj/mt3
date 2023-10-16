@@ -6,7 +6,7 @@ import Loading from './Components/Loading';
 import { TasksDB } from './lib/TasksDB';
 import type { TaskType } from "./types/TaskType";
 import TasksTile from './Components/Tiles/TasksTile';
-import { Drawer, Modal, Popconfirm, notification } from 'antd';
+import { Button, Drawer, Modal, Popconfirm, notification } from 'antd';
 import AddTaskForm from './Components/Forms/Tasks/AddTaskForm';
 
 function App() {
@@ -15,6 +15,7 @@ function App() {
   const [loadingTasks, setLoadingTasks] = useState<boolean>(true)
   const [actionsDrawerVisible, setActionsDrawerVisible] = useState<boolean>(false)
   const [addTaskModalVisible, setAddTaskModalVisible] = useState<boolean>(false)
+  const [filter, setFilter] = useState<boolean>(true)
   const loadTasks = async () => {
     setLoadingTasks(true)
     const DB = await TasksDB()
@@ -36,7 +37,7 @@ function App() {
     const { DeleteAllCompleted } = DB
     const result = await DeleteAllCompleted()
     loadTasks()
-    notification.success({message: result.message})
+    notification.success({ message: result.message })
   }
 
   useEffect(() => {
@@ -48,6 +49,7 @@ function App() {
     setAddTaskModalVisible(true)
   }
 
+
   return (
     <>
       <div className='navbar'>
@@ -56,7 +58,7 @@ function App() {
         </svg>
       </div>
       <Modal title="Add new task" footer={false} open={addTaskModalVisible} closable={true} onCancel={() => { setAddTaskModalVisible(false) }}>
-        <AddTaskForm loadTasks={loadTasks} />
+        <AddTaskForm loadTasks={loadTasks} tasks={tasks} />
       </Modal>
       <Drawer onClose={() => { setActionsDrawerVisible(false) }} className='actions_drawer' open={actionsDrawerVisible} placement='left' title="Action Menu">
         <ul className='actions_menu'>
@@ -85,9 +87,19 @@ function App() {
           </Popconfirm>
         </ul>
       </Drawer>
+
+      <div style={{ marginBottom: "30px", display: "flex", gap: "30px" }}>
+        <Button onClick={() => { setFilter(false) }}>Show all by new</Button>
+        <Button onClick={() => { setFilter(true) }}>Show active items</Button>
+      </div>
+
       {
-        loadingTasks ? <Loading /> : <TasksTile tasks={tasks} loadTasks={loadTasks} />
+        loadingTasks ? <Loading /> :
+          <TasksTile filter={filter} tasks={filter ? tasks.filter((task: any) => task.status === "Active") : [...tasks].sort(function (a: any, b: any) {
+            return (b.due_date < a.due_date) ? -1 : ((b.due_date > a.due_date) ? 1 : 0);
+          })} loadTasks={loadTasks} />
       }
+
       <div style={{ display: "flex", gap: "30px" }}>
         <h2>
           Active: {tasks.filter(task => task.status === "Active").length}

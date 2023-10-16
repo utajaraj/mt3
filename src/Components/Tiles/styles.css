@@ -39,7 +39,7 @@
 }
 
 .tile:hover {
-    box-shadow: none!important;
+    box-shadow: none !important;
     cursor: pointer;
     background-color: #ededed;
 }
@@ -62,5 +62,8 @@
     padding: 30px;
     min-height: 150px;
     width: calc(25% - 30px);
+    border: 1px solid gray;
+    background-color: white;
+    cursor: move;
     border: 1px solid black;
 }

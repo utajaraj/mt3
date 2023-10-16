@@ -67,3 +67,10 @@ body {
   cursor: pointer;
   transition: background-color 0.3s ease;
 }
+.ant-btn-default {
+  background-color: #000;
+  color: white;
+}
+.ant-select-item.ant-select-item-option:hover,.ant-select-item.ant-select-item-option:focus,.ant-select-item.ant-select-item-option.ant-select-item-option-grouped.ant-select-item-option-active,.ant-select-item.ant-select-item-option.ant-select-item-option-active{
+  background-color: #c2c2c2;
+}

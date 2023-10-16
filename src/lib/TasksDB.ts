@@ -52,31 +52,32 @@ export const TasksDB = async () => {
 
   const AddTask = async (task: TaskType | any): Promise<ValidationType> => {
     try {
+      const count = await db.count("tasks")
       const priority = task.priority == undefined || task.priority === null ? 0 : task.priority
       const name = task.name || "";
       const status = task.status || "";
       const due_date = task.due_date ? task.due_date.toISOString() : "";
-      const order = task.order == undefined || task.order === null ? 0 : task.order
+      const order = task.order == undefined || task.order === null ? count : task.order
       const newTask: TaskType = { priority, name, status, due_date, order }
 
 
       const taskValidation: ValidationType = validateTask(newTask)
       const isValidTask = taskValidation.status
 
+      
       if (isValidTask) {
         await db.add('tasks', newTask);
         return { status: true }
       }
-
+      
       return taskValidation
-
-
+      
+      
     } catch (error) {
-      console.log(error)
       return { status: false, message: "Unknown error please contact the administrator." }
     }
   }
-
+  
   const UpdateTask = async (task: TaskType | any): Promise<ValidationType> => {
     try {
       const priority = task.priority == undefined || task.priority === null ? 0 : task.priority
@@ -86,8 +87,6 @@ export const TasksDB = async () => {
       const order = task.order == undefined || task.order === null ? 0 : task.order
       const task_id = task.task_id
       const newTask: TaskType = { priority, name, status, due_date, order, task_id }
-
-
       const taskValidation: ValidationType = validateTask(newTask)
       const isValidTask = taskValidation.status
       const keys = await db.getAllKeys("tasks")

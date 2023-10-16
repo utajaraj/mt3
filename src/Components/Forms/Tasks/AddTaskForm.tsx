@@ -17,6 +17,7 @@ const statuses = ["Active", "Deleted", "Done"]
 
 export default function AddTaskForm({ ...props }) {
 
+    const tasks = props.tasks
     const submitTask = async (form: TaskType) => {
         const DB = await TasksDB()
         const { AddTask } = DB
@@ -52,19 +53,25 @@ export default function AddTaskForm({ ...props }) {
         <Form form={addTaskForm} onFinish={submitTask}>
             <div>
                 <label>Text</label>
-                <Form.Item name="name">
+                <Form.Item name="name" rules={[{
+                    validator: async (field: any, value) => {
+                        if (tasks.map((task: any) => task[field.field]).includes(value)) {
+                            return Promise.reject(new Error("Name must be unique."));
+                        }
+                    },
+                }, { required: true, message: "Text is required." }]}>
                     <Input />
                 </Form.Item>
             </div>
             <div>
                 <label>Priority</label>
-                <Form.Item name="priority">
+                <Form.Item name="priority" rules={[{ required: true, message: "Priority is required." }]}>
                     <Select options={priorities} showSearch />
                 </Form.Item>
             </div>
             <div>
                 <label>Status</label>
-                <Form.Item name="status">
+                <Form.Item name="status" rules={[{ required: true, message: "Status is required." }]}>
                     <Select showSearch>
                         {
                             statuses.map((status: string, i: number) => {
@@ -80,7 +87,7 @@ export default function AddTaskForm({ ...props }) {
             </div>
             <div>
                 <label>Due date</label>
-                <Form.Item name="due_date">
+                <Form.Item name="due_date" rules={[{ required: true, message: "Due date is required" }]}>
                     <DatePicker showTime={true} style={{ width: "100%" }} />
                 </Form.Item>
             </div>

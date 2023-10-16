@@ -1,6 +1,6 @@
 Per the requests
 The app does not require a backend, but because this is meant to be a productivity app losing all your todos by closing the tab is a NO NO.
-DATA PERSISTENCE is achieved using the in built IndexDB database of the browsers. 
+DATA PERSISTENCE is achieved using the in built IndexDB database of the browsers.  Meaning the data will remain even when the pc has been turned off, even with no backend,
 There are some issues with the boundaries of the drag boxes and sorting might behave inconsistently..
 IndexDB is "supported by most modern browsers" regarless it is still a finicky thing to work with and requires cross browser testing to ensure reliability. To run this app use Chrome, or some other V8 based browser like brave, opera, edge, etc.
 This react app run using the vite build tool;

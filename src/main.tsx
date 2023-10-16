@@ -15,7 +15,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           borderRadius: 2,
 
           // Alias Token
-          colorBgContainer: '#f6ffed',
+          colorBgContainer: '#ddd',
         },
       }}
     >

@@ -6,16 +6,13 @@ import type { FC } from 'react'
 import { useEffect, useRef, useState } from 'react'
 import { useDrag, useDrop } from 'react-dnd'
 import { Switch, notification } from 'antd'
+import dayjs from "dayjs"
 export const ItemTypes = {
     CARD: 'card',
 }
 
 
-const style = {
-    border: '1px solid gray',
-    backgroundColor: 'white',
-    cursor: 'move',
-}
+
 
 export interface CardProps {
     id: any
@@ -138,9 +135,11 @@ export const Card: FC<CardProps> = ({ id, task, index, moveCard, loadTasks }) =>
             })
         }
     }
-
+    
+    const datetime = dayjs(new Date(task.due_date))
     return (
-        <div ref={ref} className='regular-tile' style={{ ...style, opacity }} data-handler-id={handlerId}>
+        <div ref={ref} className='regular-tile' style={{ ...{ backgroundColor: `${datetime.isToday() || datetime.isTomorrow() ? "#ffd6d6" : "white"}` }, opacity }} data-handler-id={handlerId}>
+
             <h2>{task.name}</h2>
             <p><b>Due date:</b> <br /> {new Date(task.due_date).toLocaleString("en-GB")}</p>
             <p><b>Priority:</b> <br /> {task.priority}</p>
@@ -148,7 +147,7 @@ export const Card: FC<CardProps> = ({ id, task, index, moveCard, loadTasks }) =>
                 <b>Status:</b>
                 <br />
                 {
-                    taskData.status === "Deleted" ? <p>Deleted</p> :
+                    taskData.status === "Deleted" ? <span>Deleted</span> :
                         <Switch onClick={(value: any, e: any) => { updateTask(e, value, task) }} defaultChecked={task.status === "Active"} checkedChildren="Active" unCheckedChildren="Done" />
                 }
             </p>
