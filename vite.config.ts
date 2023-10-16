@@ -3,6 +3,6 @@ import react from '@vitejs/plugin-react'
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  base:"/mt3-pending-source",
+  base:"/mt3",
   plugins: [react()],
 })
